@@ -1,0 +1,139 @@
+/* Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #8e9eab);
+  color: #333;
+  min-height: 100vh;
+}
+
+/* Container */
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Input */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Button */
+button {
+  padding: 10px 20px;
+  background: #4e9af1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #3b83d6;
+}
+
+/* Navbar */
+nav.navbar {
+  background: #222;
+  color: white;
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Navbar Sections */
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Navbar Links and Buttons */
+.nav-left a,
+.nav-right a,
+.nav-right button {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-left a:first-child,
+.nav-right a:first-child {
+  margin-left: 0;
+}
+
+.nav-left a:hover,
+.nav-right a:hover,
+.nav-right button:hover {
+  text-decoration: underline;
+}
+
+/* Profile Circle */
+.profile-circle {
+  width: 36px;
+  height: 36px;
+  background-color: #4e9af1;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Task Styling */
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f6f8fa;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.task span {
+  flex: 1;
+  cursor: pointer;
+}
+
+.task.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.task button {
+  background: crimson;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.task button:hover {
+  background: darkred;
+}
