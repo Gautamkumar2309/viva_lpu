@@ -1,6 +1,12 @@
 // src/pages/Home.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/app.css";
+import {
+  createTask,
+  getTasks,
+  deleteTask,
+  updateTask,
+} from "../services/taskService";
 
 function Home() {
   const [tasks, setTasks] = useState([]);
@@ -10,48 +16,84 @@ function Home() {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editInput, setEditInput] = useState("");
 
-  const handleAdd = () => {
+  // ✅ Fetch tasks from DB on mount
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const data = await getTasks();
+        setTasks(data);
+      } catch (err) {
+        console.error("Error fetching tasks:", err.message);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  // ✅ Add task
+  const handleAdd = async () => {
     const trimmed = taskInput.trim();
     if (trimmed) {
-      const newTask = {
-        id: Date.now(),
-        text: trimmed,
-        due: dueDate,
-        completed: false,
-      };
-      setTasks([newTask, ...tasks]);
-      setTaskInput("");
-      setDueDate("");
+      try {
+        const newTask = await createTask({
+          text: trimmed,
+          due: dueDate,
+        });
+        setTasks([newTask, ...tasks]);
+        setTaskInput("");
+        setDueDate("");
+      } catch (err) {
+        console.error("❌ Error adding task:", err.message);
+        alert("Failed to add task. Try again.");
+      }
     }
   };
 
-  const handleToggle = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  // ✅ Delete task
+  const handleDelete = async (id) => {
+    try {
+      await deleteTask(id);
+      setTasks(tasks.filter((task) => task._id !== id));
+    } catch (err) {
+      console.error("❌ Error deleting task:", err.message);
+      alert("Failed to delete task.");
+    }
   };
 
-  const handleDelete = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+  // ✅ Toggle complete (Optional - UI only or can be extended)
+  const handleToggle = async (id, currentStatus) => {
+  try {
+    const updated = await updateTask(id, { completed: !currentStatus });
+    setTasks(tasks.map((task) => task._id === id ? updated : task));
+  } catch (err) {
+    console.error("❌ Failed to toggle task:", err.message);
+  }
+};
 
+
+  // ✅ Enable edit mode
   const handleEdit = (id, currentText) => {
     setEditingTaskId(id);
     setEditInput(currentText);
   };
 
-  const handleSaveEdit = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, text: editInput } : task
-      )
-    );
-    setEditingTaskId(null);
-    setEditInput("");
+  // ✅ Save edit (updates DB and UI)
+  const handleSaveEdit = async (id) => {
+    try {
+      const updated = await updateTask(id, { text: editInput });
+      setTasks(
+        tasks.map((task) =>
+          task._id === id ? updated : task
+        )
+      );
+      setEditingTaskId(null);
+      setEditInput("");
+    } catch (err) {
+      console.error("❌ Error updating task:", err.message);
+      alert("Failed to update task.");
+    }
   };
 
+  // ✅ Filter based on status
   const filteredTasks = tasks.filter((task) => {
     if (filter === "completed") return task.completed;
     if (filter === "pending") return !task.completed;
@@ -99,19 +141,19 @@ function Home() {
           </p>
         ) : (
           filteredTasks.map((task) => (
-            <div className={`task ${task.completed ? "completed" : ""}`} key={task.id}>
+            <div className={`task ${task.completed ? "completed" : ""}`} key={task._id}>
               <div style={{ flex: 1 }}>
-                {editingTaskId === task.id ? (
+                {editingTaskId === task._id ? (
                   <>
                     <input
                       value={editInput}
                       onChange={(e) => setEditInput(e.target.value)}
                     />
-                    <button onClick={() => handleSaveEdit(task.id)}>Save</button>
+                    <button onClick={() => handleSaveEdit(task._id)}>Save</button>
                   </>
                 ) : (
                   <>
-                    <span onClick={() => handleToggle(task.id)}>{task.text}</span>
+                    <span onClick={() => handleToggle(task._id, task.completed)}>{task.text}</span>
                     <div style={{ fontSize: "12px", color: "#888" }}>
                       Due: {task.due || "No due date"}
                     </div>
@@ -119,8 +161,8 @@ function Home() {
                 )}
               </div>
               <div style={{ display: "flex", gap: "8px" }}>
-                <button onClick={() => handleEdit(task.id, task.text)}>Edit</button>
-                <button onClick={() => handleDelete(task.id)}>Delete</button>
+                <button onClick={() => handleEdit(task._id, task.text)}>Edit</button>
+                <button onClick={() => handleDelete(task._id)}>Delete</button>
               </div>
             </div>
           ))

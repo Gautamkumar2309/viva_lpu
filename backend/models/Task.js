@@ -10,6 +10,9 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  due: {
+    type: Date, // ✅ Add this line
+  },
   completed: {
     type: Boolean,
     default: false,
